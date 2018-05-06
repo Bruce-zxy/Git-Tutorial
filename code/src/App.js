@@ -4,6 +4,8 @@ import Terminal from 'terminal-in-react';
 
 import { dateFormat } from './utility';
 
+// import AppStyleWrapper from './App.style';
+
 class App extends Component {
   constructor(props) {
     super(props);
