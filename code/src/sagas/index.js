@@ -1,7 +1,7 @@
 import { take, takeEvery, put, call, all }   from 'redux-saga/effects';
 
 // actions
-import { actions as timeactions }       from '../reducers';
+// import { actions as timeactions }       from '../reducers';
 
 // functions
 export const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
