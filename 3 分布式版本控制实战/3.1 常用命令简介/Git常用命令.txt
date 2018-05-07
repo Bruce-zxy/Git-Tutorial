@@ -25,3 +25,5 @@ git show
 
 git gc
 git fsck
+
+gitk
