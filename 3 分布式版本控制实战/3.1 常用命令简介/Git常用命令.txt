@@ -22,3 +22,6 @@ git reflog
 git rm
 git tag
 git show
+
+git gc
+git fsck
