@@ -1,24 +1,38 @@
-import styled from 'styled-components';
+import { injectGlobal } from 'emotion';
+import styled from 'react-emotion';
 
-const AppStyleWrapper = styled.div `
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 100vh
-	.example-vertical-track {
-	    background-color: transparent;
-	    width: 5px;
-	    transition: opacity 0.3s;
+injectGlobal`
+	body,html {
+		margin: 0;
+		padding: 0;
+		font-family: sans-serif;
 	}
-	.example-vertical-handler {
-	    width: 2px;
-	    right: 1px;
-	    border-radius: 2px;
-	    background-color: rgba(0, 0, 0, 0.2);
-	    transition: opacity 0.3s;
-	    &:hover {
-	        background-color: rgba(0, 0, 0, 0.4);
-	    }
+`
+
+const AppStyleWrapper = styled('div')`
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-pack: distribute;
+    justify-content: space-around;
+	-ms-flex-align: center;
+	align-items: center;
+	height: 100vh;
+	.terminal-base {
+		box-shadow: 4px 2px 20px #333;
+	}
+	.terminal-base>div {
+		font-weight: bold;
+		font-size: 2em!important;
+	}
+	.terminal-base>div div:first-child svg {
+		position: relative;
+	    top: -5px;
+	}
+	.terminal-base>div div:last-child {
+		overflow-x: hidden;
+	}
+	.terminal-base pre>span {
+		color: #FFF80B;
 	}
 `;
 

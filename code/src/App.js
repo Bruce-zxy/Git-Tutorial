@@ -4,7 +4,8 @@ import Terminal from 'terminal-in-react';
 
 import { dateFormat } from './utility';
 
-// import AppStyleWrapper from './App.style';
+import ActionPart from './ActionPart';
+import AppStyleWrapper from './App.style';
 
 class App extends Component {
   constructor(props) {
@@ -13,13 +14,9 @@ class App extends Component {
       msg: `This is Git Tutorial offered by Bruce-zxy. Now is `
     };
     this.commands = {
-      showmsg: {
-        commands: () => 'Hello World',
-        descriptions: 'shows a message'
-      },
-      popup: {
-        commands: () => alert('Terminal in React'),
-        descriptions: 'alert'
+      git: {
+        commands: this.gitCommands.bind(this),
+        descriptions: 'Git Tutorial'
       }
     };
   }
@@ -31,6 +28,13 @@ class App extends Component {
       requestAnimationFrame(updateTime);
     }
     updateTime();
+  }
+  gitCommands(args, print, runCmd) {
+    print(this.state.msg);
+
+
+
+
   }
   createCommands = () => {
     let cmds = this.commands;
@@ -48,7 +52,7 @@ class App extends Component {
     const { msg } = this.state;
     const mainProps = this.createCommands();
     return (
-      <div className="container">
+      <AppStyleWrapper>
         <Terminal
           color='white'
           backgroundColor='black'
@@ -60,10 +64,8 @@ class App extends Component {
           msg={msg}
           {...mainProps}
         />
-        <div className="display">
-          <p>这是需要演示的地方</p>
-        </div>
-      </div>
+        <ActionPart />
+      </AppStyleWrapper>
     );
   }
 }
