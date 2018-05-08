@@ -6,7 +6,6 @@ import ActionPartStyleWrapper from './ActionPart.style';
 class ActionPart extends Component {
   constructor(props) {
     super(props);
-    this.renderTreeNodes = this.renderTreeNodes.bind(this);
     this.tree = [{
       title: 'GitTutorial',
       key: 'GitTutorial',
@@ -50,9 +49,11 @@ class ActionPart extends Component {
       remoteTree: this.deepClone(this.tree),
       treeId: 0
     }
+    this.renderTreeNodes = this.renderTreeNodes.bind(this);
   }
   componentWillReceiveProps(nextProps) {
     const { action } = nextProps;
+    const self = this;
     switch(action.action) {
       case 'addFile':
         this.setState((prevState) => {
@@ -63,6 +64,26 @@ class ActionPart extends Component {
         this.setState((prevState) => {
           prevState.sourceTree[0].children[1].children = prevState.sourceTree[0].children[1].children.filter((item) => item.title === action.data ? false : true);
           return { sourceTree: prevState.sourceTree }
+        })
+        break;
+      case 'gitAdd':
+        this.setState((prevState) => {
+          action.data.forEach((item) => {
+            prevState.stageTree.push({ title: item, key: item});
+          })
+        })
+        break;
+      case 'gitCommit':
+        this.setState((prevState) => {
+          prevState.stageTree.forEach((item) => {
+            prevState.masterTree[0].children[1].children.push(item);
+          })
+          return { stageTree: [] }
+        })
+        break;
+      case 'gitPush':
+        this.setState((prevState) => {
+          prevState.remoteTree[0].children[1].children = [...prevState.masterTree[0].children[1].children];
         })
         break;
     }

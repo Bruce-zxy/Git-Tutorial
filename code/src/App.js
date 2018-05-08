@@ -11,7 +11,8 @@ class App extends Component {
     super(props);
     this.state = {
       msg: `This is Git Tutorial offered by Bruce-zxy. Now is `,
-      action: {}
+      action: {},
+      currentFile: []
     };
     this.commands = {
       git: {
@@ -42,16 +43,51 @@ class App extends Component {
     updateTime();
   }
   gitCommands(args, print, runCmd) {
-
-
-
+    if (args.length === 1) {
+      print('Need arguments!\neg: git add new.txt');
+    } else if (args.length === 2) {
+      print(`You seem to have forgetten to add parameters`);
+    } else {
+      switch(args[1]) {
+        case 'add':
+          if (args[2] === '.') {
+            this.setState((prevState) => ({
+              action: { action: 'gitAdd', data: prevState.currentFile },
+              currentFile: []
+            }));
+          } else {
+            this.setState((prevState) => ({
+              action: { action: 'gitAdd', data: args.slice(2).filter((item) => !!item) },
+              currentFile: prevState.currentFile.filter((item) => { 
+                for (let i = 0; i < args.slice(2).length; i++) return item !== args.slice(2)[i];
+              })
+            }));
+          }
+          print(`Save File(s) To The Stage Area`);
+          break;
+        case 'commit':
+          this.setState((prevState) => ({
+            action: { action: 'gitCommit', data: args.slice(2) }
+          }));
+          break;
+        case 'push':
+          this.setState((prevState) => ({
+            action: { action: 'gitPush', data: args.slice(2) }
+          }));
+          break;
+        default:
+          print(`-bash:git ${args[1]}: command not found`)
+          break;
+      }
+    }
   }
   touchCommands(args, print, runCmd) {
     switch(args.length) {
       case 2:
-        this.setState({
-          action: { action: 'addFile', data: { title: args[1], key: args[1] } }
-        });
+        this.setState((prevState) => ({
+          action: { action: 'addFile', data: { title: args[1], key: args[1] } },
+          currentFile: [...prevState.currentFile, args[1]]
+        }));
         print(`Create New File Named ${args[1]}`);
         break;
       default:
@@ -61,9 +97,10 @@ class App extends Component {
   removeCommands(args, print, runCmd) {
     switch(args.length) {
       case 2:
-        this.setState({
-          action: { action: 'removeFile', data: args[1] }
-        });
+        this.setState((prevState) => ({
+          action: { action: 'removeFile', data: args[1] },
+          currentFile: prevState.currentFile.filter((item) => item !== args[1])
+        }));
         print(`Remove File Named ${args[1]}`);
         break;
       default:

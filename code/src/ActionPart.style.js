@@ -60,9 +60,15 @@ const ActionPartStyleWrapper = styled('div')`
 		border-radius: 5px;
 		transition: all .35s ease-in-out;
 		animation: highLight 2s ease-in-out;
+		transform-origin: 50% 50%;
 	}
 	@keyframes highLight {
 		0% {
+			transform: scale(0);
+			background: rgba(100, 255, 107, .3);
+		}
+		62% {
+			transform: scale(1);
 			background: #f9f516;
 		}
 		100% {
