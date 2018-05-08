@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Row, Col, Tree, Icon } from 'antd';
+import { Row, Col, Tree, Icon, Divider } from 'antd';
 
 import ActionPartStyleWrapper from './ActionPart.style';
 
@@ -9,8 +9,8 @@ class ActionPart extends Component {
     super(props);
     this.renderTreeNodes = this.renderTreeNodes.bind(this);
     this.tree = [{
-      title: 'code',
-      key: 'code',
+      title: 'GitTutorial',
+      key: 'GitTutorial',
       expanded: true,
       children: [{
         title: 'node_modules',
@@ -18,31 +18,47 @@ class ActionPart extends Component {
         expanded: false,
         children: [
           { title: 'antd', key: 'antd' },
-          { title: 'react', key: 'react' },
-          { title: 'redux', key: 'redux' },
-        ],
+          { title: 'react', key: 'react' }
+        ]
       }, {
         title: 'src',
         key: 'src',
         expanded: true,
         children: [
-          { title: 'reducers', key: 'reducers' },
-          { title: 'sagas', key: 'sagas' },
-          { title: 'ActionPard.js', key: 'ActionPard.js' },
-          { title: 'ActionPard.style.js', key: 'ActionPard.style.js' },
-          { title: 'App.js', key: 'App.js' },
-          { title: 'App.style.js', key: 'App.style.js' },
-          { title: 'index.js', key: 'index.js' },
-          { title: 'registerServiceWorker.js', key: 'registerServiceWorker.js' },
-          { title: 'store.js', key: 'store.js' },
-          { title: 'untility.js', key: 'untility.js' },
-        ],
-      }],
+          { title: 'a.js', key: 'a.js' },
+          { title: 'b.python', key: 'b.python' }
+        ]
+      }]
     }];
+    this.deepClone = (obj) => {
+      var newObj = obj.constructor === Array ? [] : {};
+      if (typeof obj !== 'object') {
+        console.log(obj);
+        return;
+      } else {
+        for (var i in obj) {
+          if (obj.hasOwnProperty(i)) {
+            newObj[i] = typeof obj[i] === 'object' ? this.deepClone(obj[i]) : obj[i];
+          }
+        }
+      }
+      return newObj
+    }
     this.state = {
       expandedKeys: [],
-      tree: this.tree
+      sourceTree: this.deepClone(this.tree),
+      stageTree: this.deepClone(this.tree),
+      masterTree: this.deepClone(this.tree),
+      remoteTree: this.deepClone(this.tree),
+      treeId: 0
     }
+  }
+  componentWillReceiveProps(nextProps) {
+    const { newDom } = nextProps;
+    console.log(newDom);
+    this.setState((prevState) => {
+      prevState.sourceTree[0].children[1].children.push(newDom)
+    })
   }
   componentWillMount() {
     this.findExpandedKeys(this.tree);
@@ -70,30 +86,48 @@ class ActionPart extends Component {
     });
   }
   render() {
-    const { expandedKeys, tree } = this.state;
+    const { expandedKeys, sourceTree, stageTree, masterTree, remoteTree, treeId } = this.state;
     return (
-      <ActionPartStyleWrapper>
-        <Row className="top">
+      <ActionPartStyleWrapper key={treeId}>
+        <Row className="top" gutter={32} type="flex" justify="space-around">
           <Col className="work-area" span={8}>
-            <Tree showIcon defaultExpandedKeys={expandedKeys}>
-              {this.renderTreeNodes(tree)}
-            </Tree>
+            <Row gutter={16}>
+              <Divider>工作区</Divider>
+              <Col className="work-area" span={24}>
+                <Divider orientation="left">源代码</Divider>
+                <Tree showIcon defaultExpandedKeys={expandedKeys}>
+                  {this.renderTreeNodes(sourceTree)}
+                </Tree>
+              </Col>
+            </Row>
           </Col>
           <Col className="version-repo" span={16}>
-            <Col className="stage" span={12}>
-              <Tree showIcon defaultExpandedKeys={expandedKeys}>
-                {this.renderTreeNodes(tree)}
-              </Tree>
-            </Col>
-            <Col className="master" span={12}>
-              <Tree showIcon defaultExpandedKeys={expandedKeys}>
-                {this.renderTreeNodes(tree)}
-              </Tree>
-            </Col>
+            <Row gutter={16}>
+              <Divider>版本库</Divider>
+              <Col className="stage" span={12}>
+                <Divider orientation="left">暂存区 Stage</Divider>
+                <Tree showIcon defaultExpandedKeys={expandedKeys}>
+                  {this.renderTreeNodes(stageTree)}
+                </Tree>
+              </Col>
+              <Col className="master" span={12}>
+                <Divider orientation="left">分支 Master</Divider>
+                <Tree showIcon defaultExpandedKeys={expandedKeys}>
+                  {this.renderTreeNodes(masterTree)}
+                </Tree>
+              </Col>
+            </Row>
           </Col>
         </Row>
-        <Row className="bottom">
-
+        <Row className="bottom" type="flex" justify="space-around">
+          <Col className="remote-repo" span={16}>
+            <Row gutter={16}>
+              <Divider orientation="left">远程库 Remote</Divider>
+              <Tree showIcon defaultExpandedKeys={expandedKeys}>
+                {this.renderTreeNodes(remoteTree)}
+              </Tree>
+            </Row>
+          </Col>
         </Row>
       </ActionPartStyleWrapper>
     );

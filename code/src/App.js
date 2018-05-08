@@ -11,7 +11,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      msg: `This is Git Tutorial offered by Bruce-zxy. Now is `
+      msg: `This is Git Tutorial offered by Bruce-zxy. Now is `,
+      newDom: ''
     };
     this.commands = {
       git: {
@@ -22,12 +23,18 @@ class App extends Component {
   }
   componentDidMount() {
     const { msg } = this.state;
+    const self = this;
     const updateTime = () => {
       const preMsg = document.querySelectorAll('.terminal-base pre')[0];
       !!preMsg ? preMsg.innerHTML = `${msg}<span>${dateFormat('yyyy-MM-dd hh:mm:ss')}</span>\n` : console.warn('Not Found The Tips Bar.')
       requestAnimationFrame(updateTime);
     }
     updateTime();
+    setTimeout(() => {
+      self.setState({
+        newDom: { title: 'new.js', key: 'new.js' }
+      })
+    }, 3000)
   }
   gitCommands(args, print, runCmd) {
     print(this.state.msg);
@@ -49,7 +56,7 @@ class App extends Component {
     return { commands, descriptions };
   }
   render() {
-    const { msg } = this.state;
+    const { msg, newDom } = this.state;
     const mainProps = this.createCommands();
     return (
       <AppStyleWrapper>
@@ -64,7 +71,7 @@ class App extends Component {
           msg={msg}
           {...mainProps}
         />
-        <ActionPart />
+        <ActionPart newDom={newDom}/>
       </AppStyleWrapper>
     );
   }
