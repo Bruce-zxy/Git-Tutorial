@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { Row, Col, Tree, Icon, Divider } from 'antd';
 
 import ActionPartStyleWrapper from './ActionPart.style';
@@ -33,7 +32,6 @@ class ActionPart extends Component {
     this.deepClone = (obj) => {
       var newObj = obj.constructor === Array ? [] : {};
       if (typeof obj !== 'object') {
-        console.log(obj);
         return;
       } else {
         for (var i in obj) {
@@ -47,18 +45,27 @@ class ActionPart extends Component {
     this.state = {
       expandedKeys: [],
       sourceTree: this.deepClone(this.tree),
-      stageTree: this.deepClone(this.tree),
+      stageTree: [],
       masterTree: this.deepClone(this.tree),
       remoteTree: this.deepClone(this.tree),
       treeId: 0
     }
   }
   componentWillReceiveProps(nextProps) {
-    const { newDom } = nextProps;
-    console.log(newDom);
-    this.setState((prevState) => {
-      prevState.sourceTree[0].children[1].children.push(newDom)
-    })
+    const { action } = nextProps;
+    switch(action.action) {
+      case 'addFile':
+        this.setState((prevState) => {
+          prevState.sourceTree[0].children[1].children.push(action.data);
+        })
+        break;
+      case 'removeFile':
+        this.setState((prevState) => {
+          prevState.sourceTree[0].children[1].children = prevState.sourceTree[0].children[1].children.filter((item) => item.title === action.data ? false : true);
+          return { sourceTree: prevState.sourceTree }
+        })
+        break;
+    }
   }
   componentWillMount() {
     this.findExpandedKeys(this.tree);
@@ -70,14 +77,14 @@ class ActionPart extends Component {
         if (item.expanded) self.setState((prevState) => ({ expandedKeys: [...prevState.expandedKeys, item.key] }));
         self.findExpandedKeys(item.children);
       }
-    })
+    });
   }
   renderTreeNodes(data) {
     return data.map((item) => {
       if (item.children) {
 
         return (
-          <Tree.TreeNode icon={<Icon type={item.expanded ? "folder-open" : "folder"} />} title={item.title} key={item.key} dataRef={item}>
+          <Tree.TreeNode icon={<Icon type={!!item.children.length ? "folder-open" : "folder"} />} title={item.title} key={item.key} dataRef={item}>
             {this.renderTreeNodes(item.children)}
           </Tree.TreeNode>
         );
@@ -94,7 +101,7 @@ class ActionPart extends Component {
             <Row gutter={16}>
               <Divider>工作区</Divider>
               <Col className="work-area" span={24}>
-                <Divider orientation="left">源代码</Divider>
+                <Divider orientation="left">源代码 /Source</Divider>
                 <Tree showIcon defaultExpandedKeys={expandedKeys}>
                   {this.renderTreeNodes(sourceTree)}
                 </Tree>
@@ -105,13 +112,13 @@ class ActionPart extends Component {
             <Row gutter={16}>
               <Divider>版本库</Divider>
               <Col className="stage" span={12}>
-                <Divider orientation="left">暂存区 Stage</Divider>
+                <Divider orientation="left">暂存区 /Stage</Divider>
                 <Tree showIcon defaultExpandedKeys={expandedKeys}>
                   {this.renderTreeNodes(stageTree)}
                 </Tree>
               </Col>
               <Col className="master" span={12}>
-                <Divider orientation="left">分支 Master</Divider>
+                <Divider orientation="left">分支 /Master</Divider>
                 <Tree showIcon defaultExpandedKeys={expandedKeys}>
                   {this.renderTreeNodes(masterTree)}
                 </Tree>
@@ -122,7 +129,7 @@ class ActionPart extends Component {
         <Row className="bottom" type="flex" justify="space-around">
           <Col className="remote-repo" span={16}>
             <Row gutter={16}>
-              <Divider orientation="left">远程库 Remote</Divider>
+              <Divider orientation="left">远程库 /Remote</Divider>
               <Tree showIcon defaultExpandedKeys={expandedKeys}>
                 {this.renderTreeNodes(remoteTree)}
               </Tree>
@@ -134,21 +141,4 @@ class ActionPart extends Component {
   }
 }
 
-// Map Redux state to component props
-function mapStateToProps(state) {
-  return {
-    count: state.app.count
-  }
-}
-
-// Map Redux actions to component props
-function mapDispatchToProps(dispatch) {
-  return {
-
-  }
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ActionPart);
+export default ActionPart;

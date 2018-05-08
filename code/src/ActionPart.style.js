@@ -57,7 +57,17 @@ const ActionPartStyleWrapper = styled('div')`
 	// 属性控件过渡动画
 	.ant-tree li {
 		position: relative;
+		border-radius: 5px;
 		transition: all .35s ease-in-out;
+		animation: highLight 2s ease-in-out;
+	}
+	@keyframes highLight {
+		0% {
+			background: #f9f516;
+		}
+		100% {
+			background: transparent;
+		}
 	}
 `;
 
