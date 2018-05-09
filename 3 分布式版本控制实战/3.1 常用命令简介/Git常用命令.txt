@@ -1,11 +1,13 @@
 git clone
 git init
+git add
 git pull
 git fetch
-git add
 git commit
 git commit --amend
 git push
+
+
 git branch
 git checkout
 git checkout -- readme.txt
